@@ -28,11 +28,24 @@ Fixpoint search1 (n x : nat) : bool :=
   end.
 
 Theorem search1Spec :
-  forall n x, (exists i, i <n /\ array i = x) <-> search1 n x = true.
+  forall n x, (exists i, i < n /\ array i = x) <-> search1 n x = true.
 Admitted.
 
 End Search1.
 
 Section Search2.
+
+Variable array2 : nat -> nat -> nat.
+
+Fixpoint search2 (m n x : nat) : bool :=
+  match m with
+  | 0 => search1 (array2 0) n x
+  | S k => search1 (array2 m) n x || search2 k n x
+  end.
+
+Theorem search2Spec :
+  forall m n x,
+  (exists j k, j < m /\ k < n /\ array2 j k = x) <-> search2 m n x = true.
+Admitted.
 
 End Search2.
