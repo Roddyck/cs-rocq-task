@@ -23,8 +23,8 @@ Variable array : nat -> nat.
 
 Fixpoint search1 (n x : nat) : bool :=
   match n with
-  | 0 => if x =? array 0 then true else false
-  | S k => if x =? array n then true else search1 k x
+  | 0 => x =? array 0
+  | S k => (x =? array n) || search1 k x
   end.
 
 Theorem search1Spec :
