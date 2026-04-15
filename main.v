@@ -1,0 +1,38 @@
+From Stdlib Require Import Arith.
+From Stdlib Require Import Lia.
+From Stdlib Require Import Bool.
+Import Nat Peano.
+
+Global Hint Resolve ltb_spec0 leb_spec0 eqb_spec : bdestruct.
+
+Ltac bdestr X H :=
+  let e := fresh "e" in
+   evar (e : Prop);
+   assert (H : reflect e X); subst e;
+    [ eauto with bdestruct
+    | destruct H as [H | H];
+       [ | try first [apply nlt_ge in H | apply nle_gt in H]]].
+
+Tactic Notation "bdestruct" constr(X) := let H := fresh in bdestr X H.
+
+Tactic Notation "bdestruct" constr(X) "as" ident(H) := bdestr X H.
+
+Section Search1.
+
+Variable array : nat -> nat.
+
+Fixpoint search1 (n x : nat) : bool :=
+  match n with
+  | 0 => if x =? array 0 then true else false
+  | S k => if x =? array n then true else search1 k x
+  end.
+
+Theorem search1Spec :
+  forall n x, (exists i, i <n /\ array i = x) <-> search1 n x = true.
+Admitted.
+
+End Search1.
+
+Section Search2.
+
+End Search2.
