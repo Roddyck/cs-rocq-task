@@ -69,11 +69,20 @@ Proof.
     - intros [j [k [H1 [H2 H3]]]]. simpl. 
       destruct (search1 (array2 (S m)) n x) eqn:Hb; [reflexivity |].
       rewrite le_succ_r in H1. destruct H1 as [Hle | Heq]. 
-      + simpl. apply IH. exists j, k. split. assumption. split; assumption.
-      + assert (search1 (array2 (S m)) n x = true) as Htrue.
-        { rewrite <- search1Spec. exists k. subst j. split; assumption. }
+      + simpl. apply IH. exists j, k. lia.
+      + simpl. subst j. assert (search1 (array2 (S m)) n x = true) as Htrue.
+        { rewrite <- search1Spec. exists k. split; assumption. }
         rewrite Hb in Htrue. discriminate Htrue.
 
-  * 
+  * induction m as [| m IH].
+    - intros H. simpl in H. rewrite <- search1Spec in H.
+      destruct H as [k [H1 H2]]. exists 0, k. split; lia.
+      
+    - intros H. simpl in H. destruct (search1 (array2 (S m)) n x) eqn:Hb.
+      + rewrite <- search1Spec in Hb. destruct Hb as [k [H1 H2]].
+        exists (S m), k. split; lia.
+      + simpl in H. apply IH in H. destruct H as [j [k [H1 [H2 H3]]]].
+        exists j, k. lia.
+Qed.
 
 End Search2.
