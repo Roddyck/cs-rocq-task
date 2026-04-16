@@ -60,6 +60,20 @@ Fixpoint search2 (m n x : nat) : bool :=
 Theorem search2Spec :
   forall m n x,
   (exists j k, j <= m /\ k <= n /\ array2 j k = x) <-> search2 m n x = true.
-Admitted.
+Proof.
+  split.
+  * induction m as [| m IH].
+    - intros [j [k [H1 [H2 H3]]]]. simpl.
+      assert (j = 0) by lia. subst j. apply search1Spec. exists k. split; assumption.
+      
+    - intros [j [k [H1 [H2 H3]]]]. simpl. 
+      destruct (search1 (array2 (S m)) n x) eqn:Hb; [reflexivity |].
+      rewrite le_succ_r in H1. destruct H1 as [Hle | Heq]. 
+      + simpl. apply IH. exists j, k. split. assumption. split; assumption.
+      + assert (search1 (array2 (S m)) n x = true) as Htrue.
+        { rewrite <- search1Spec. exists k. subst j. split; assumption. }
+        rewrite Hb in Htrue. discriminate Htrue.
+
+  * 
 
 End Search2.
