@@ -28,8 +28,22 @@ Fixpoint search1 (n x : nat) : bool :=
   end.
 
 Theorem search1Spec :
-  forall n x, (exists i, i < n /\ array i = x) <-> search1 n x = true.
-Admitted.
+  forall n x, (exists i, i <= n /\ array i = x) <-> search1 n x = true.
+Proof.
+  split.
+  * induction n as [| n IH].
+    - intros [i [H1 H2]]. simpl. assert (i = 0) by lia. subst x i. apply eqb_refl.
+    - intros [i [H1 H2]]. simpl. unfold "||". bdestruct (x =? array (S n));
+      [reflexivity |]. assert (i <= n \/ i = S n) by lia. destruct H0 as [H0 | H0].
+      + apply IH. exists i. lia.
+      + apply IH. exists i. subst i. lia.
+
+  * induction n as [| n IH].
+    - intros H. exists 0. simpl in H. bdestruct (x =? array 0); lia.
+    - intros H. simpl in H. bdestruct (x =? array (S n)).
+      + simpl in H. exists (S n). split; lia.
+      + simpl in H. apply IH in H. destruct H as [i [H1 H2]]. exists i. lia.
+Qed.
 
 End Search1.
 
@@ -45,7 +59,7 @@ Fixpoint search2 (m n x : nat) : bool :=
 
 Theorem search2Spec :
   forall m n x,
-  (exists j k, j < m /\ k < n /\ array2 j k = x) <-> search2 m n x = true.
+  (exists j k, j <= m /\ k <= n /\ array2 j k = x) <-> search2 m n x = true.
 Admitted.
 
 End Search2.
