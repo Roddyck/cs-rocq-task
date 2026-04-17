@@ -102,19 +102,18 @@ Lemma search2Spec_forward_step :
   ((exists j k, j < S m /\ k < n /\ array2 j k = x) -> search2 (S m) n x = true).
 Proof.
   intros m n x IH.
-  intros [j [k [H1 [H2 H3]]]]. simpl. assert (j < m \/ j = m) by lia.
-  destruct H as [Hlt | Heq]. clear H1.
+  intros [j [k [H1 [H2 H3]]]]. simpl.
+  assert (j < m \/ j = m) as [Hlt | Heq] by lia.
 
-  * destruct (search1 (array2 m) n x) eqn:Hb; [reflexivity |]. simpl. 
+  * clear H1. destruct (search1 (array2 m) n x) eqn:Hb; [reflexivity |]. simpl. 
     apply IH. exists j, k. lia.
 
-  (** противоречивый случай ([j = m]) и при этом [search1 (array2 m) n x = false]. *)
   * clear H1. destruct (search1 (array2 m) n x) eqn:Hb; [reflexivity |]. simpl.
-    (** докажем, что должно быть [search1 (array2 m) n x = true] *)
-    assert (search1 (array2 m) n x = true) as Htrue.
-    - rewrite <- search1Spec. exists k. subst j. split; assumption.
-
-    - rewrite Hb in Htrue. discriminate Htrue.
+    (** противоречивый случай ([j = m]) и при этом [search1 (array2 m) n x = false].
+    докажем, что должно быть [search1 (array2 m) n x = true] *)
+    assert (Htrue : search1 (array2 m) n x = true).
+    { rewrite <- search1Spec. exists k. subst j. split; assumption. }
+    rewrite Hb in Htrue. discriminate Htrue.
 Qed.
 
 Lemma search2Spec_backward_step :
