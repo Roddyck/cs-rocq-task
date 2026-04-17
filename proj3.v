@@ -29,7 +29,7 @@ Section Search1.
 Variable array : nat -> nat.
 
 (** для пустого массива ([n = 0]) возвращаем [false]. Для непустого,
-если [x] находится в массиве, то возвращаем [true], иначе [false] *)
+если [x] находится в массиве [(array 0, ..., array (n - 1))], то возвращаем [true], иначе [false] *)
 Fixpoint search1 (n x : nat) : bool :=
   match n with
   | 0 => false
@@ -37,7 +37,7 @@ Fixpoint search1 (n x : nat) : bool :=
   end.
 
 (** Далее следуют две вспомогательные леммы, доказывающие шаг индукции при доказательстве
- в соответствующий направлениях ([->] и [<-]). *)
+ в соответствующий направлениях (-> и <-). *)
 Lemma search1Spec_forward_step :
   forall n x,
   ((exists i, i < n /\ array i = x) -> search1 n x = true) ->
@@ -81,11 +81,12 @@ End Search1.
 
 Section Search2.
 
-(** [array2] моделирует двумерный массив, где [m] и [n] количество строк и
+(** [array2] моделирует двумерный массив, где параметры - количество строк и
 столбцов соответственно. *)
 Variable array2 : nat -> nat -> nat.
 
-(** аналогично одномерному массиву, при [m = 0] массив пуст и возвращаем [false].
+(** [m] и [n] - количество строк и столбцов соответственно.
+Аналогично одномерному массиву, при [m = 0] массив пуст и возвращаем [false].
 В случае непустого массива возвращаем [true], если [x] встречается в массиве,
 иначе возвращаем [false]. *)
 Fixpoint search2 (m n x : nat) : bool :=
@@ -112,6 +113,7 @@ Proof.
     (** докажем, что должно быть [search1 (array2 m) n x = true] *)
     assert (search1 (array2 m) n x = true) as Htrue.
     - rewrite <- search1Spec. exists k. subst j. split; assumption.
+
     - rewrite Hb in Htrue. discriminate Htrue.
 Qed.
 
