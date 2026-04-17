@@ -109,10 +109,13 @@ Proof.
     apply IH. exists j, k. lia.
 
   * clear H1. destruct (search1 (array2 m) n x) eqn:Hb; [reflexivity |]. simpl.
-    (** противоречивый случай ([j = m]) и при этом [search1 (array2 m) n x = false].
-    докажем, что должно быть [search1 (array2 m) n x = true] *)
+    subst j.
+    (** противоречивый случай [array2 m k] = x,
+     и при этом [search1 (array2 m) n x = false]. *)
+
+    (** докажем, что должно быть [search1 (array2 m) n x = true] *)
     assert (Htrue : search1 (array2 m) n x = true).
-    { rewrite <- search1Spec. exists k. subst j. split; assumption. }
+    { rewrite <- search1Spec. exists k. split; assumption. }
     rewrite Hb in Htrue. discriminate Htrue.
 Qed.
 
