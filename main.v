@@ -1,3 +1,8 @@
+(** * Проект номер 3. Поиск числа в двумерном массиве.
+
+Сначала задача решается для одномерного массива, затем с использованием
+полученных результатов для двумерного массива. *)
+
 From Stdlib Require Import Arith.
 From Stdlib Require Import Lia.
 From Stdlib Require Import Bool.
@@ -23,13 +28,16 @@ Section Search1.
 параметра [n], т.о. [n] - длина массива *)
 Variable array : nat -> nat.
 
-(** для пустого массива ([n = 0]) возвращаем false *)
+(** для пустого массива ([n = 0]) возвращаем [false]. Для непустого,
+если [x] находится в массиве, то возвращаем [true], иначе [false] *)
 Fixpoint search1 (n x : nat) : bool :=
   match n with
   | 0 => false
   | S k => (x =? array k) || search1 k x 
   end.
 
+(** Далее следуют две вспомогательные леммы, доказывающие шаг индукции при доказательстве
+ в соответствующий направлениях ([->] и [<-]). *)
 Lemma search1Spec_forward_step :
   forall n x,
   ((exists i, i < n /\ array i = x) -> search1 n x = true) ->
@@ -77,13 +85,16 @@ Section Search2.
 столбцов соответственно. *)
 Variable array2 : nat -> nat -> nat.
 
-(** аналогично одномерному массиву, при [m = 0] массив пуст и возвращаем false *)
+(** аналогично одномерному массиву, при [m = 0] массив пуст и возвращаем [false].
+В случае непустого массива возвращаем [true], если [x] встречается в массиве,
+иначе возвращаем [false]. *)
 Fixpoint search2 (m n x : nat) : bool :=
   match m with
   | 0 => false 
   | S k => search1 (array2 k) n x || search2 k n x
   end.
 
+(** Аналогичные [search1Spec] вспомогательные леммы *)
 Lemma search2Spec_forward_step :
   forall m n x,
   ((exists j k, j < m /\ k < n /\ array2 j k = x) -> search2 m n x = true) ->
@@ -91,13 +102,13 @@ Lemma search2Spec_forward_step :
 Proof.
   intros m n x IH.
   intros [j [k [H1 [H2 H3]]]]. simpl. assert (j < m \/ j = m) by lia.
-  destruct H as [Hlt | Heq].
+  destruct H as [Hlt | Heq]. clear H1.
 
   * destruct (search1 (array2 m) n x) eqn:Hb; [reflexivity |]. simpl. 
     apply IH. exists j, k. lia.
 
-  * destruct (search1 (array2 m) n x) eqn:Hb; [reflexivity |]. simpl.
-    (** противоречивый случай ([j = m]) и при этом [search1 (array2 m) n x = false] *)
+  (** противоречивый случай ([j = m]) и при этом [search1 (array2 m) n x = false]. *)
+  * clear H1. destruct (search1 (array2 m) n x) eqn:Hb; [reflexivity |]. simpl.
     (** докажем, что должно быть [search1 (array2 m) n x = true] *)
     assert (search1 (array2 m) n x = true) as Htrue.
     - rewrite <- search1Spec. exists k. subst j. split; assumption.
